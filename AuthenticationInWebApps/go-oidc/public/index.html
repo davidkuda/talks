@@ -1,0 +1,29 @@
+{{- define "base" -}}
+<!doctype html>
+<html>
+  <head>
+    <style>
+      body {
+        margin: 10em;
+      }
+      button {
+        padding: 1em 4em;
+        background-color: hotpink;
+        border: none;
+        color: white;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>OpenID Connect Demo</h1>
+    {{- if .IsLoggedIn }}
+    <p>hello user {{ .EmailAddress }}</p>
+    <p>your sub is {{ .SUB }}</p>
+    <p><a href="/logout"><button>logout</button></a></p>
+    {{- else }}
+    <p><a href="/login"><button>login</button></a></p>
+    {{- end }}
+  </body>
+</html>
+{{- end -}}
