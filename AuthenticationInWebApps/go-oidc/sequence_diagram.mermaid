@@ -1,0 +1,41 @@
+sequenceDiagram
+    actor User
+    participant App as WebApp
+    participant IdP as OpenID Provider
+
+    User->>App: click the login button
+
+    Note over App: generate random state, nonce, and PKCE (code_challenge)
+    Note over App: create redicrect link
+
+    App-->>User: send 302 response with link and cookies
+
+    User->>IdP: Browser automatically follows the redirect link (location header)\nGET openid.provider.ch/?...
+
+    IdP-->>User: Send login form: Who are you?
+
+    User->>IdP: I am david.kuda@noser.com and my password is IAmRobot
+
+    Note over IdP: Authenticate User
+    Note over IdP: create redirect URL with authorization code
+    Note over IdP: Associate code_challenge with authorization request
+
+    IdP-->>User: 302 Redirect to callback ?code=AUTHORIZATION_CODE
+
+    User->>App: Follow redirect to the callback endpoint
+
+    Note over App: validate state
+
+    App->>IdP: POST IdP: send the authorization_code and the code_verifier
+
+    Note over IdP: SHA256(code_verifier) must match stored code_challenge
+
+    IdP-->>App: Send relevant tokens (ID token (JWT), refresh token, ...)
+
+    Note over App: Validate ID Token: signature, iss, aud, exp, nonce
+
+    Note over App: Use ID Token claims, e.g., sub, name, email
+
+    App-->>User: Set application session cookie\n302 Redirect /
+    User->>App: GET /\nCookie: session=...
+    App-->>User: Authenticated page
